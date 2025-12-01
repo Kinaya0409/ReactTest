@@ -9,7 +9,7 @@ import ProtectedUser from "./protected/ProtectedUser";
 // ==== ADMIN PAGES ====
 import AdminDashboardPage from "../pages/admin/AdminDashboardPage";
 import AdminLayananPage from "../pages/admin/AdminLayananPage";
-import AdminJadwalPage from "../pages/admin/AdminJadwalPage";
+import AdminPegawaiPage from "../pages/admin/AdminPegawaiPage"; // <-- FIX
 import AdminPesananPage from "../pages/admin/AdminPesananPage";
 
 // ==== USER PAGES ====
@@ -40,7 +40,7 @@ const AppRouter = () => {
         {/* ADMIN PAGES */}
         <Route path="/admin/dashboard" element={<ProtectedAdmin><AdminDashboardPage /></ProtectedAdmin>} />
         <Route path="/admin/layanan" element={<ProtectedAdmin><AdminLayananPage /></ProtectedAdmin>} />
-        <Route path="/admin/pegawai" element={<ProtectedAdmin><AdminJadwalPage /></ProtectedAdmin>} />
+        <Route path="/admin/pegawai" element={<ProtectedAdmin><AdminPegawaiPage /></ProtectedAdmin>} /> {/* <-- FIX */}
         <Route path="/admin/pesanan" element={<ProtectedAdmin><AdminPesananPage /></ProtectedAdmin>} />
 
         {/* DEFAULT */}
