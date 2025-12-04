@@ -1,115 +1,87 @@
-import React, { useEffect, useState } from "react";
+// src/pages/pelanggan/PembayaranPage.jsx
+import React, { useState } from "react";
 import { Container, Form, FloatingLabel, Button, Card } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { apiFetch } from "../../api/api.js";
+import "./PembayaranPage.css";
 
 const PembayaranPage = () => {
-  const location = useLocation();
+  const { state } = useLocation();
   const navigate = useNavigate();
 
-  // bookingId dikirim dari halaman sebelumnya
-  const bookingId = location.state?.bookingId || null;
+  const booking = state?.booking || null;
+  const [metode, setMetode] = useState("");
 
-  const [booking, setBooking] = useState(null);
-  const [form, setForm] = useState({
-    metode_pembayaran: "",
-  });
-
-  // Ambil detail pesanan dari API
-  useEffect(() => {
-    const loadBooking = async () => {
-      if (!bookingId) return;
-
-      try {
-        const data = await apiFetch(`/pemesanan/read`);
-        const selected = data.find((b) => b.id_pemesanan === bookingId);
-
-        if (!selected) {
-          toast.error("Pesanan tidak ditemukan.");
-          return;
-        }
-
-        setBooking(selected);
-      } catch {
-        toast.error("Gagal memuat data pesanan");
-      }
-    };
-
-    loadBooking();
-  }, [bookingId]);
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  if (!booking) {
+    return (
+      <Container className="mt-4">
+        <h3>Pesanan tidak ditemukan.</h3>
+      </Container>
+    );
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.metode_pembayaran) {
-      return toast.error("Pilih metode pembayaran.");
-    }
+    if (!metode) return toast.error("Pilih metode pembayaran.");
 
     try {
-      const response = await apiFetch("/pembayaran/bayar", {
+      await apiFetch("/pembayaran/create", {
         method: "POST",
         body: JSON.stringify({
-          id_pemesanan: bookingId,
-          metode_pembayaran: form.metode_pembayaran,
+          id_pemesanan: booking.id_pemesanan,
+          metode_pembayaran: metode,
         }),
       });
 
       toast.success("Pembayaran berhasil!");
       navigate("/pesanan");
     } catch (err) {
-      console.error(err);
       toast.error(err.message || "Pembayaran gagal.");
     }
   };
 
-  if (!booking) {
-    return (
-      <Container className="mt-3">
-        <h3>Memuat data pesanan...</h3>
-      </Container>
-    );
-  }
-
   return (
-    <Container className="mt-3">
-      <h2>Pembayaran</h2>
+    <div className="pembayaran-wrapper">
+      <Container className="mt-4">
 
-      <Card className="p-3 mb-3">
-        <h5>Detail Pesanan</h5>
-        <div>Layanan: <strong>{booking.layanan?.nama_layanan}</strong></div>
-        <div>Tanggal Booking: {booking.tanggal_booking}</div>
-        <div>Jam Booking: {booking.jam_booking}</div>
-        <div>Status: {booking.status_pemesanan}</div>
-        <div className="mt-2">
-          <strong>Total Bayar: Rp {booking.layanan?.harga}</strong>
-        </div>
-      </Card>
+        <h2 className="pembayaran-title">Pembayaran</h2>
 
-      <Form onSubmit={handleSubmit}>
-        <FloatingLabel label="Metode Pembayaran" className="mb-3">
-          <Form.Select
-            name="metode_pembayaran"
-            value={form.metode_pembayaran}
-            onChange={handleChange}
-          >
-            <option value="">-- Pilih Metode --</option>
-            <option value="Cash">Cash</option>
-            <option value="Transfer">Transfer</option>
-            <option value="E-Wallet">E-Wallet</option>
-          </Form.Select>
-        </FloatingLabel>
+        <Card className="pembayaran-card mb-3">
+          <h5>Detail Pesanan</h5>
+          <div>Layanan: <strong>{booking.layanan?.nama_layanan}</strong></div>
+          <div>Tanggal Booking: {booking.tanggal_booking}</div>
+          <div>Jam Booking: {booking.jam_booking}</div>
+          <div>Status: {booking.status_pemesanan}</div>
 
-        <Button type="submit" className="mt-2">
-          Bayar Sekarang
-        </Button>
-      </Form>
-    </Container>
+          <div className="mt-2 pembayaran-total">
+            <strong>Total Bayar: Rp {booking.layanan?.harga}</strong>
+          </div>
+        </Card>
+
+        <Form onSubmit={handleSubmit}>
+          <FloatingLabel label="Metode Pembayaran" className="mb-3">
+            <Form.Select
+              value={metode}
+              onChange={(e) => setMetode(e.target.value)}
+            >
+              <option value="">-- Pilih Metode --</option>
+              <option value="Cash">Cash</option>
+              <option value="Transfer">Transfer</option>
+              <option value="E-Wallet">E-Wallet</option>
+            </Form.Select>
+          </FloatingLabel>
+
+          <Button type="submit" className="btn-bayar">
+            Bayar Sekarang
+          </Button>
+        </Form>
+
+      </Container>
+    </div>
   );
+
 };
 
 export default PembayaranPage;
