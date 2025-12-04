@@ -1,7 +1,7 @@
 // src/components/TopNavbar.jsx
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Navbar, Container, Nav, Button } from "react-bootstrap";
+import { Navbar, Container, Nav, Button, Modal } from "react-bootstrap";
 
 import logo from "../assets/images/logo.png"; // Pastikan path benar
 import "./TopNavbar.css";
@@ -27,6 +27,10 @@ const TopNavbar = ({ routes }) => {
     user?.nama ||
     user?.username ||
     (role === "admin" ? "Admin" : "Pelanggan");
+
+  const[showConfirm, setShowConfirm] = useState(false);
+  const handleLogoutClick = () => setShowConfirm(true);
+
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -77,9 +81,24 @@ const TopNavbar = ({ routes }) => {
             {role ? (
               <>
                 <span className="fw-semibold me-3">Hai, {userName}</span>
-                <Button variant="danger" className="logout-btn" onClick={handleLogout}>
+                <Button variant="danger" className="logout-btn" onClick={handleLogoutClick}>
                   Logout
                 </Button>
+
+                <Modal show={showConfirm} onHide={() => setShowConfirm(false)}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>Konfirmasi Logout</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>Apakah Anda yakin ingin logout?</Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowConfirm(false)}>
+                      Batal
+                    </Button>
+                    <Button variant="danger" onClick={handleLogout}>
+                      Logout
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
               </>
             ) : (
               <>
