@@ -67,9 +67,9 @@ const PembayaranPage = () => {
               onChange={(e) => setMetode(e.target.value)}
             >
               <option value="">-- Pilih Metode --</option>
+              <option value="Qris">Qris</option>
               <option value="Cash">Cash</option>
-              <option value="Transfer">Transfer</option>
-              <option value="E-Wallet">E-Wallet</option>
+              <option value="Transfer">Transfer</option> 
             </Form.Select>
           </FloatingLabel>
 
@@ -84,4 +84,4 @@ const PembayaranPage = () => {
 
 };
 
-export default PembayaranPage;
+export default PembayaranPage; 
